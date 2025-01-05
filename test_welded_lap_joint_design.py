@@ -3,7 +3,6 @@ from welded_lap_joint_design import design_lap_joint
 # Define test functions
 def test_valid_lap_joint_design():
     result = design_lap_joint(P=50, w=200, t1=10, t2=8)
-    print("test_valid_lap_joint_design result:", result)
     assert result["Weld Size (mm)"] == 7  # Min thickness (t2) - 1 mm
     assert result["Weld Material Grade"] == "E250"
     assert result["Length of Weld (mm)"] > 0
@@ -18,7 +17,6 @@ def test_invalid_force():
         design_lap_joint(P=-10, w=200, t1=10, t2=8)
         print("test_invalid_force failed")
     except ValueError as e:
-        print("test_invalid_force error:", e)
         assert str(e) == "Tensile force must be positive."
         print("test_invalid_force passed")
 
@@ -27,7 +25,6 @@ def test_invalid_plate_width():
         design_lap_joint(P=50, w=-200, t1=10, t2=8)
         print("test_invalid_plate_width failed")
     except ValueError as e:
-        print("test_invalid_plate_width error:", e)
         assert str(e) == "Plate width must be positive."
         print("test_invalid_plate_width passed")
 
@@ -36,27 +33,23 @@ def test_invalid_plate_thickness():
         design_lap_joint(P=50, w=200, t1=-10, t2=8)
         print("test_invalid_plate_thickness failed")
     except ValueError as e:
-        print("test_invalid_plate_thickness error:", e)
         assert str(e) == "Plate thickness must be positive."
         print("test_invalid_plate_thickness passed")
 
 def test_efficiency_with_high_force():
     result = design_lap_joint(P=200, w=300, t1=15, t2=12)
-    print("test_efficiency_with_high_force result:", result)
     assert result["Efficiency of Connection"] <= 1
     assert result["Strength of Connection (N)"] > result["Plate 1 Yield Strength (N)"]
     print("test_efficiency_with_high_force passed")
 
 def test_nearest_round_length():
     result = design_lap_joint(P=100, w=250, t1=12, t2=10)
-    print("test_nearest_round_length result:", result)
     assert result["Length of Weld (mm)"] % 10 == 0  # Rounded to nearest 10 mm
     print("test_nearest_round_length passed")
 
 # Test edge cases
 def test_minimal_input_values():
     result = design_lap_joint(P=1, w=10, t1=1, t2=1)
-    print("test_minimal_input_values result:", result)
     assert result["Weld Size (mm)"] == 0  # Throat thickness reduced for minimal t1 or t2
     assert result["Length of Weld (mm)"] > 0
     assert result["Efficiency of Connection"] <= 1

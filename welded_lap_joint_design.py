@@ -25,6 +25,14 @@ def design_lap_joint(P, w, t1, t2):
     w: Plate width in mm
     t1, t2: Plate thicknesses in mm
     """
+    # Validate inputs
+    if P <= 0:
+        raise ValueError("Tensile force must be positive.")
+    if w <= 0:
+        raise ValueError("Plate width must be positive.")
+    if t1 <= 0 or t2 <= 0:
+        raise ValueError("Plate thickness must be positive.")
+    
     # Convert tensile force to N (1 kN = 1000 N)
     P = P * 1000
 
@@ -40,11 +48,8 @@ def design_lap_joint(P, w, t1, t2):
     weld_strength = calculate_weld_strength(weld_size, 1, material_grade)  # Per mm
     length_of_weld = P / weld_strength
 
-    # Refined logic: only round length if it's a reasonable amount
-    if length_of_weld > 100:  # Arbitrary threshold to prevent excessive rounding
-        length_of_weld = math.ceil(length_of_weld / 10) * 10
-    else:
-        length_of_weld = round(length_of_weld, 2)
+    # Round to nearest 10 mm for practical purposes
+    length_of_weld = math.ceil(length_of_weld / 10) * 10
 
     # Connection efficiency (utilization ratio)
     connection_strength = calculate_weld_strength(weld_size, length_of_weld, material_grade)
@@ -60,16 +65,3 @@ def design_lap_joint(P, w, t1, t2):
         "Plate 2 Yield Strength (N)": plate2_yield,
         "Efficiency of Connection": round(efficiency, 2)
     }
-
-# Example Input
-P = 50  # kN
-w = 200  # mm
-t1 = 10  # mm
-t2 = 8  # mm
-
-# Run the design function
-result = design_lap_joint(P, w, t1, t2)
-
-# Print the results
-for key, value in result.items():
-    print(f"{key}: {value}")
