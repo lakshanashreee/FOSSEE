@@ -7,11 +7,17 @@ set ERROR_LOG="error_log.txt"
 REM Clear previous error log
 if exist %ERROR_LOG% del %ERROR_LOG%
 
-REM Run OSI file validation script once for all files
+echo Running OSI file validation...
 python validate_osi.py >> %ERROR_LOG% 2>&1
 
-REM Display error log
+echo.
+echo Running Pytest for validation tests...
+pytest test_validate_osi.py >> %ERROR_LOG% 2>&1
+
+echo.
+echo === Error Log ===
 type %ERROR_LOG%
 
-REM Keep window open for review
+echo.
+echo Validation completed. Check error_log.txt for details.
 pause
