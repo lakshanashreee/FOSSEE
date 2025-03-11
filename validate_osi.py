@@ -24,7 +24,7 @@ NUMERIC_KEYS = {
 
 def validate_osi_files():
     files = [f for f in os.listdir() if f.endswith(".osi")]
-
+    
     if not files:
         print("No OSI files found in the directory.")
         return
