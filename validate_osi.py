@@ -1,7 +1,6 @@
 import yaml
 import os
 
-# Define validation rules
 VALID_VALUES = {
     "Bolt.Bolt_Hole_Type": ["Standard", "Oversized", "Slotted"],
     "Bolt.TensionType": ["Pre-tensioned", "Non-pre-tensioned"],
@@ -23,6 +22,17 @@ NUMERIC_KEYS = {
     "Load.Shear": (0, 500),
 }
 
+def validate_osi_files():
+    files = [f for f in os.listdir() if f.endswith(".osi")]
+
+    if not files:
+        print("No OSI files found in the directory.")
+        return
+
+    print(f"Found {len(files)} OSI file(s). Starting validation...\n")
+
+    for file in files:
+        validate_osi_file(file)
 
 def validate_osi_file(filename):
     errors = {"Misspelled Keys": [], "Invalid Values": [], "Invalid Numeric Values": []}
@@ -55,7 +65,6 @@ def validate_osi_file(filename):
     except Exception as e:
         print(f"\n Unexpected Error in {filename}: {e}")
 
-
 def check_misspelled_keys(data, errors):
     def recursive_check(d, parent_key=""):
         if isinstance(d, dict):
@@ -68,7 +77,6 @@ def check_misspelled_keys(data, errors):
 
     recursive_check(data)
 
-
 def check_invalid_values(data, errors):
     def recursive_check(d, parent_key=""):
         if isinstance(d, dict):
@@ -80,7 +88,6 @@ def check_invalid_values(data, errors):
                 recursive_check(value, full_key)
 
     recursive_check(data)
-
 
 def check_numeric_values(data, errors):
     def recursive_check(d, parent_key=""):
@@ -99,15 +106,6 @@ def check_numeric_values(data, errors):
 
     recursive_check(data)
 
-
 if __name__ == "__main__":
-    files = [f for f in os.listdir() if f.endswith(".osi")]
-    
-    if not files:
-        print("No OSI files found in the directory.")
-    else:
-        print(f"Found {len(files)} OSI file(s). Starting validation...")
-        for file in files:
-            validate_osi_file(file)
-
+    validate_osi_files()
 
