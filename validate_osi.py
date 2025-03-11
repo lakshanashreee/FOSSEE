@@ -1,5 +1,4 @@
 import yaml
-import sys
 import os
 
 # Define validation rules
@@ -19,9 +18,9 @@ MISSPELLED_KEYS = {
 }
 
 NUMERIC_KEYS = {
-    "Detailing.Gap": (0, 50),  # Example valid range: 0 to 50 mm
-    "Load.Axial": (0, 1000),  # Example: Axial load should be non-negative
-    "Load.Shear": (0, 500),  # Shear load should be non-negative
+    "Detailing.Gap": (0, 50),
+    "Load.Axial": (0, 1000),
+    "Load.Shear": (0, 500),
 }
 
 
@@ -29,10 +28,6 @@ def validate_osi_file(filename):
     errors = {"Misspelled Keys": [], "Invalid Values": [], "Invalid Numeric Values": []}
 
     try:
-        if not os.path.exists(filename):
-            print(f"\n ERROR: File Not Found: {filename}")
-            return
-
         with open(filename, "r", encoding="utf-8") as file:
             data = yaml.safe_load(file)
 
@@ -40,14 +35,12 @@ def validate_osi_file(filename):
             print(f"\n ERROR: Empty or Corrupted OSI File: {filename}")
             return
 
-        # Validate keys and values
         check_misspelled_keys(data, errors)
         check_invalid_values(data, errors)
         check_numeric_values(data, errors)
 
-        # Display results
         if any(errors.values()):
-            print("\n ERRORS FOUND IN OSI FILE:")
+            print(f"\n ERRORS FOUND IN OSI FILE: {filename}")
             for category, issues in errors.items():
                 if issues:
                     print(f"\n {category}:")
@@ -55,18 +48,15 @@ def validate_osi_file(filename):
                         print(f"  - {issue}")
             print("\n Fix the above errors and try again.")
         else:
-            print("\n OSI file validation successful. No errors found.")
+            print(f"\n OSI file validation successful for: {filename}")
 
     except yaml.YAMLError as e:
-        print(f"\n YAML Parsing Error: {e}")
+        print(f"\n YAML Parsing Error in {filename}: {e}")
     except Exception as e:
-        print(f"\n Unexpected Error: {e}")
+        print(f"\n Unexpected Error in {filename}: {e}")
 
 
 def check_misspelled_keys(data, errors):
-    """
-    Recursively checks for misspelled keys in the OSI file and suggests corrections.
-    """
     def recursive_check(d, parent_key=""):
         if isinstance(d, dict):
             for key in list(d.keys()):
@@ -74,16 +64,12 @@ def check_misspelled_keys(data, errors):
                 if key in MISSPELLED_KEYS:
                     corrected_key = MISSPELLED_KEYS[key]
                     errors["Misspelled Keys"].append(f"{full_key} -> {corrected_key}")
-
                 recursive_check(d[key], full_key)
 
     recursive_check(data)
 
 
 def check_invalid_values(data, errors):
-    """
-    Validates the values against predefined valid options.
-    """
     def recursive_check(d, parent_key=""):
         if isinstance(d, dict):
             for key, value in d.items():
@@ -91,16 +77,12 @@ def check_invalid_values(data, errors):
                 if full_key in VALID_VALUES:
                     if value not in VALID_VALUES[full_key]:
                         errors["Invalid Values"].append(f"{full_key} = '{value}' (Expected: {VALID_VALUES[full_key]})")
-
                 recursive_check(value, full_key)
 
     recursive_check(data)
 
 
 def check_numeric_values(data, errors):
-    """
-    Ensures numeric fields are valid numbers within specified ranges.
-    """
     def recursive_check(d, parent_key=""):
         if isinstance(d, dict):
             for key, value in d.items():
@@ -113,15 +95,19 @@ def check_numeric_values(data, errors):
                         errors["Invalid Numeric Values"].append(
                             f"{full_key} = {value} (Out of range: {min_val} to {max_val})"
                         )
-
                 recursive_check(value, full_key)
 
     recursive_check(data)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python validate_osi.py <filename>")
+    files = [f for f in os.listdir() if f.endswith(".osi")]
+    
+    if not files:
+        print("No OSI files found in the directory.")
     else:
-        validate_osi_file(sys.argv[1])
+        print(f"Found {len(files)} OSI file(s). Starting validation...")
+        for file in files:
+            validate_osi_file(file)
+
 
