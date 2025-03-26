@@ -1,3 +1,21 @@
+"""
+test_validate_osi.py
+
+This script contains unit tests for `validate_osi.py` using pytest.
+
+Requirements:
+- Python 3.x
+- PyYAML (`pip install pyyaml`)
+- pytest (`pip install pytest`)
+
+How to Run Tests:
+1. Ensure `validate_osi.py` is in the same directory.
+2. Open a terminal or command prompt in the project directory.
+3. Run the tests using: run_osdag.bat
+
+This will execute all test cases and display pass/fail results.
+"""
+
 import pytest
 from validate_osi import check_misspelled_keys, check_invalid_values, check_numeric_values
 
