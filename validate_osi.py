@@ -1,3 +1,18 @@
+"""
+validate_osi.py
+This script validates OSI files by checking for misspelled keys, invalid values, and out-of-range numeric values.
+
+Requirements:
+- Python 3.x
+- PyYAML (`pip install pyyaml`)
+
+How to Run:
+1. Place your `.osi` files in the same directory as `validate_osi.py`
+2. Open a terminal or command prompt in the project directory.
+3. For automated validation and testing, run the script using: run_osdag.bat
+
+"""
+
 import yaml
 import os
 
