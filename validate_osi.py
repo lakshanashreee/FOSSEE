@@ -123,4 +123,3 @@ def check_numeric_values(data, errors):
 
 if __name__ == "__main__":
     validate_osi_files()
-
